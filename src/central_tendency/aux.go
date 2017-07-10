@@ -5,11 +5,9 @@ import (
 )
 
 func main() {
+	set := []float64{3, 5, 5, 5, 5, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4}
 
 	ocurrenceMap := make(map[float64]int, 0)
-
-	set := []float64{3, 3, 3, 5, 5, 5, 5, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4}
-
 	for _, val := range set {
 		if _, ok := ocurrenceMap[val]; ok {
 			ocurrenceMap[val]++
@@ -18,25 +16,21 @@ func main() {
 		}
 	}
 
-	var modeKeys []float64
+	var modeKeys, auxModeKeys []float64
 	var jumpBar int
-
 	for key, val := range ocurrenceMap {
-		fmt.Println(key, ":", val)
-		if val >= jumpBar {
-			var auxModeKeys []float64
+		if val > jumpBar {
 			jumpBar = val
-
-			fmt.Println(auxModeKeys, "jumpBar →", val)
+			modeKeys = append(auxModeKeys, key)
+		} else if val == jumpBar {
 			modeKeys = append(modeKeys, key)
 		}
+
 	}
 
-	fmt.Println("Final:", modeKeys)
+	mode := ocurrenceMap[modeKeys[0]]
 
-	for key, val := range ocurrenceMap {
-		fmt.Println(key, ":", val)
-	}
+	fmt.Println("Mode Key(s):", modeKeys, "Mode:", mode)
 
 	// fmt.Println("Mode: ", mode)
 }

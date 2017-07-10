@@ -60,11 +60,7 @@ func (set ContinuousSet64) Median() (median float64, err error) {
 
 // Mean returns the arithmetic average of a ContinuousSet64 or a Not-a-number if there is no data.
 func (set ContinuousSet64) Mean() (mean float64, err error) {
-	if len(set.Data) == 0 {
-		mean = math.NaN()
-		err = errors.New("Empty data set")
-		return mean, err
-	}
+	set.emptyDataSet()
 
 	var sum float64
 	length := len(set.Data)
@@ -77,6 +73,35 @@ func (set ContinuousSet64) Mean() (mean float64, err error) {
 	return mean, err
 }
 
+// Mode returns a slice of float64 with the most repeated elements of a ContinuousSet64 and its ocurrence, or a Not-a-number if there is no data
+func (set ContinuousSet64) Mode() (modeKeys []float64, modeVal int, err error) {
+	set.emptyDataSet()
+	ocurrenceMap := make(map[float64]int, 0)
+	for _, val := range set.Data {
+		if _, ok := ocurrenceMap[val]; ok {
+			ocurrenceMap[val]++
+		} else {
+			ocurrenceMap[val]++
+		}
+	}
+
+	var auxModeKeys []float64
+	var jumpBar int
+	for key, val := range ocurrenceMap {
+		if val > jumpBar {
+			jumpBar = val
+			modeKeys = append(auxModeKeys, key)
+		} else if val == jumpBar {
+			modeKeys = append(modeKeys, key)
+		}
+
+	}
+
+	modeVal = ocurrenceMap[modeKeys[0]]
+
+	return modeKeys, modeVal, err
+}
+
 // Variance returns the variance of a ContinuousSet64 or a Not-a-number if there is no data
 func (set ContinuousSet64) Variance() (variance float64, err error) {
 	return 1, nil
@@ -86,30 +111,32 @@ func (set ContinuousSet64) Variance() (variance float64, err error) {
 
 func main() {
 
-	aSlice := ContinuousSet64{"vaca", []float64{1, 2, 3, 4, 4, 4, 12, 6, 5, 3, 3, 4, 48, 0, 9, 2, 2, 12, 43, 89, 45, 6, 7, 8, 9, 4, 6, 7, 4, 4, 4, 43, 3, 3, 23, 1, 23, 32, 3, 8, 9, 3, 201, 23, 4, 7, 8, 9, 1, 2, 3, 4, 5, 6}}
-
-	fmt.Println(len(aSlice.Data))
-	fmt.Println("Ascendant order: ", aSlice.Sort())
+	aSlice := ContinuousSet64{"vaca", []float64{1, 2, 3, 4, 4, 4, 12, 6, 5, 3, 3, 4, 48, 0, 9, 2, 2, 12, 43, 89, 45, 6, 7, 8, 9, 4, 6, 7, 4, 4, 4, 43, 3, 3, 23, 1, 23, 32, 3, 8, 9, 3, 21, 23, 4, 7, 8, 9, 1, 2, 3, 4, 5, 6}}
 
 	aMedian, err := aSlice.Median()
 	if err != nil {
 		log.Println(err)
 	}
-
 	aMean, err := aSlice.Mean()
 	if err != nil {
 		log.Println(err)
 	}
-
-	emptySlice := ContinuousSet64{"Empty", []float64{}}
-
-	emptyMedian, err := emptySlice.Median()
+	aModeKey, aModeVal, err := aSlice.Mode()
 	if err != nil {
-		log.Println(emptyMedian)
 		log.Println(err)
 	}
+	/*
+		emptySlice := ContinuousSet64{"Empty", []float64{}}
 
+		emptyMedian, err := emptySlice.Median()
+		if err != nil {
+			log.Println(emptyMedian)
+			log.Println(err)
+		}*/
+
+	fmt.Println("Samples:", len(aSlice.Data))
 	fmt.Println("Median: ", aMedian)
-	fmt.Println("Mean:", aMean)
+	fmt.Println("Mean: \t", aMean)
+	fmt.Println("Mode(s) ", aModeKey, ", value:", aModeVal)
 
 }
